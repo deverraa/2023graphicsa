@@ -1,4 +1,4 @@
-///week12-5_TRT_keyboard_mouse ­n¥Î keyboard mouse ¨Ó¾Þ±±
+//WEEK15-FINAL-°}¦C
 #include <stdio.h>
 #include <GL/glut.h>
 #include "glm.h"
@@ -14,12 +14,29 @@ void keyboard(unsigned char key, int x, int y)
     if(key=='1') ID = 1;
     if(key=='2') ID = 2;
     if(key=='3') ID = 3;
+    if(key=='s')
+    {
+        if(fout==NULL) fout= fopen("motion.txt","w");
+        for(int i=0;i<20;i++)
+        {
+            fprintf(fout,"%.2f", angle[i]);
+        }
+        fprintf(fout, "\n");
+    }else if(key=='r')
+    {
+        if(fin==NULL) fin=fopen("motion.txt","r");
+        for(int i=0;i<20;i++)
+        {
+            fscanf(fin, "%f", &angle[i]);
+        }
+    }
     glutPostRedisplay();
 }
 FILE * fout = NULL;
 FILE * fin = NULL;
 float teapotX=0, teapotY=0;
-float angle=0, angle2=0, angle3=0;
+//float angle=0, angle2=0, angle3=0;
+float angle[20]={};
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -33,26 +50,29 @@ void display()
             lowarmR = glmReadOBJ("model/lowarmR.obj");
 
         }
-        if(ID == 0)glColor3f(1,0,0);
+        if(ID == 2)glColor3f(1,0,0);
         else glColor3f(1,1,1);
-
-        if(show[0]) glmDraw(head, GLM_MATERIAL);
-        if(ID == 1)glColor3f(1,0,0);
-        else glColor3f(1,1,1);
-        if(show[1]) glmDraw(body, GLM_MATERIAL);
+        if(show[2]) glmDraw(uparmR, GLM_MATERIAL);
         glPushMatrix();
-            glTranslatef(teapotX, teapotY, 0);
+            glTranslatef(-1.959999, +0.113333,0);
+            glRotatef(angle[3],0,0,1);
+            glTranslatef(1.959999, -0.113333,0);
 
-            if(show[2]) glmDraw(uparmR, GLM_MATERIAL);
+            if(ID == 3)glColor3f(1,0,0);
+            else glColor3f(1,1,1);
+            if(show[3]) glmDraw(lowarmR, GLM_MATERIAL);
         glPopMatrix();
-        if(show[3]) glmDraw(lowarmR, GLM_MATERIAL);
+
     glPopMatrix();
+    glColor3f(0,1,0);
+    glutSolidTeapot(0.02);
     glutSwapBuffers();
 }
 int oldX = 0, oldY = 0;
 void motion(int x, int y){
     teapotX += (x - oldX)/150.0;
     teapotY -= (y - oldY)/150.0;
+    angle[ID]+=( x-oldX );
     oldX = x;
     oldY = y;
     printf("glTranslatef(%f, %f, 0);\n", teapotX, teapotY);
